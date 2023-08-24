@@ -53,8 +53,8 @@ console.log(req.body)
   );
 });
 // Endpoint para editar un contacto
-app.put('/contactos/:id', (req, res) => {
-  const { id } = req.params;
+app.put('/contactos/:id_contacto', (req, res) => {
+  const { id_contacto } = req.params;
   const {
     apellido,
     email,
@@ -64,30 +64,15 @@ app.put('/contactos/:id', (req, res) => {
     tipo_contacto,
     origen
   } = req.body;
-
+console.log(req.body,id_contacto)
    const query = `
     UPDATE contactos
     SET apellido = ?, email = ?, telefono = ?, fecha_nacimiento = ?, direccion = ?, tipo_contacto = ?, origen = ?
-    WHERE id = ?
+    WHERE id_contacto = ?
   `;
- 
- /* const query = `
-  UPDATE contactos
-SET apellido = 'Melendez',
-    email = 'luisa99@example.com',
-    telefono = NULL,
-    fecha_nacimiento = NULL,
-    direccion = NULL,
-    tipo_contacto = NULL,
-    origen = NULL
-WHERE id_contacto = 3;
-
-  
-`;*/
-  
   db.query(
     query,
-    [apellido, email, telefono, fecha_nacimiento, direccion, tipo_contacto, origen, id],
+    [apellido, email, telefono, fecha_nacimiento, direccion, tipo_contacto, origen, id_contacto],
     (err, result) => {
       if (err) {
         console.error(err);
@@ -98,10 +83,9 @@ WHERE id_contacto = 3;
     }
   );
 });
-
-// Endpoint para borrar un contacto
-app.delete('/contactos/:id', (req, res) => {
-  const idContacto = req.params.id;
+//endpoint para borrar contacto
+app.delete('/contactos/:id_contacto', (req, res) => {
+  const idContacto = req.params.id_contacto;
 
   const query = `
     DELETE FROM contactos
@@ -117,6 +101,7 @@ app.delete('/contactos/:id', (req, res) => {
     }
   });
 });
+
 // Endpoint para listar los contactos
 app.get('/contactos', (req, res) => {
   const query = 'SELECT * FROM contactos'; 
@@ -131,7 +116,25 @@ app.get('/contactos', (req, res) => {
   });
 });
 //endpoint para filtrar por nombre
-app.get('/contactos', (req, res) => {
+/*app.get('/contactos', (req, res) => {
+  const nombre = req.query.nombre; 
+  let query = 'SELECT * FROM contactos'; 
+
+  if (nombre) {
+    query = `SELECT * FROM contactos WHERE nombre LIKE '%${nombre}%'`; 
+  }
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error('Error al obtener contactos:', err);
+      res.status(500).json({ error: 'Error al obtener contactos' });
+    } else {
+      res.json(result);
+    }
+  });
+});*/
+// Endpoint para filtrar por nombre
+app.get('/contactos/filtrar', (req, res) => {
   const nombre = req.query.nombre; 
   let query = 'SELECT * FROM contactos'; 
 
@@ -148,6 +151,7 @@ app.get('/contactos', (req, res) => {
     }
   });
 });
+
 
 
 app.listen(port, () => {

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Card,
@@ -15,8 +14,10 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
-function UserCard({ name, phoneNumber }) {
+function UserCard({ name, phoneNumber, onEdit, onDelete }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const openMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -24,9 +25,31 @@ function UserCard({ name, phoneNumber }) {
     const closeMenu = () => {
     setAnchorEl(null);
     };
+    const handleDelete = (contactId) => {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Esta acción eliminará el contacto permanentemente.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+        axios
+            .delete(`http://localhost:3000/contactos/${contactId}`)
+            .then((response) => {
+            Swal.fire('¡Borrado!', 'El contacto ha sido eliminado.', 'success');
+            onDelete(contactId); 
+            })
+            .catch((error) => {
+            Swal.fire('¡Error!', 'Ocurrió un error al borrar el contacto.', 'error');
+            });
+        }
+    });
+    };
 
     return (
-    <Card sx={{ maxWidth: 600, marginBottom:5 }}>
+    <Card sx={{ maxWidth: 600, marginBottom: 5 }}>
         <CardContent>
         <Typography variant="h6">{name}</Typography>
         <Typography>{phoneNumber}</Typography>
@@ -34,10 +57,10 @@ function UserCard({ name, phoneNumber }) {
             <IconButton>
             <VisibilityIcon />
             </IconButton>
-            <IconButton>
-            <EditIcon  style={{ color: 'green' }} />
+            <IconButton onClick={onEdit}>
+            <EditIcon style={{ color: 'green' }} />
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => handleDelete(phoneNumber)}>
             <DeleteIcon style={{ color: 'red' }} />
             </IconButton>
         </div>
@@ -79,4 +102,3 @@ function UserCard({ name, phoneNumber }) {
 }
 
 export default UserCard;
-
