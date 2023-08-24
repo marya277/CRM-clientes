@@ -12,10 +12,18 @@ const Contactos = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
 
   const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    // Filtrar usuarios en base a la búsqueda
+    const filtered = users.filter((user) =>
+      `${user.nombre} ${user.apellido}`.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredUsers(filtered);
   };
 
   const handleShowForm = () => {
@@ -84,6 +92,7 @@ const Contactos = () => {
     axios.get('http://localhost:3000/contactos')
       .then((response) => {
         setUsers(response.data);
+        setFilteredUsers(response.data);
       })
       .catch((error) => {
         console.error('Error al obtener usuarios:', error);
@@ -116,11 +125,11 @@ const Contactos = () => {
           <Button onClick={handleShowForm}>Agregar</Button>
         </Box>
         {/* Componente de filtro */}
-        <FilterUser />
+        <FilterUser filteredUsers={filteredUsers} />
       </Box>
       <Box sx={{ width: '50%', paddingLeft: '16px' }}>
         {/* Componente de lista de usuarios */}
-        <UserList users={users} onEdit={handleEdit} onDelete={handleDelete} />
+        <UserList users={users} onEdit={handleEdit} onDelete={handleDelete} filterText={searchQuery} />
         {selectedContact && (
           <EditUser
             selectedContact={selectedContact}
