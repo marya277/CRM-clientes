@@ -92,7 +92,7 @@ const Contactos = () => {
     axios.get('http://localhost:3000/contactos')
       .then((response) => {
         setUsers(response.data);
-        setFilteredUsers(response.data);
+        setFilteredUsers([]);
       })
       .catch((error) => {
         console.error('Error al obtener usuarios:', error);
